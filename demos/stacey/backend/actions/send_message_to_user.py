@@ -8,11 +8,11 @@ class SendMessageToUser(Action):
         self.response_text = response_text
 
     async def execute(self):
-        print("Executing " + str(self))
+        print(f"Executing {str(self)}")
         await self.communication_channel.send_message(self.response_text)
 
     def __str__(self):
-        return "send_message_to_user with text: " + self.response_text
+        return f"send_message_to_user with text: {self.response_text}"
 
 
 

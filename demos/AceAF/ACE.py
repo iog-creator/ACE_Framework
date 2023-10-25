@@ -43,7 +43,7 @@ class ACE:
 
         self.layer_threads = {}  # To hold the threads
 
-        for layer_number, layer_instance in self.layers.items():
+        for layer_instance in self.layers.values():
             thread = threading.Thread(target=layer_instance.stand_by)
             thread.daemon = True
             thread.start()

@@ -21,7 +21,7 @@ class Interface:
         super(Interface, self).__init__(**kwargs)
 
     def output_message(self, layer_number, message):
-        url = self.BASE_URL + 'layer_update'
+        url = f'{self.BASE_URL}layer_update'
         data = {
             "layer_number": layer_number,
             "message": f"{message}\n"
@@ -51,8 +51,7 @@ class Interface:
             "collection_name": "chat_history",
             "filter": {"id": {"$gte": qsize}}
         }
-        history = self.storage.load_collection(params)
-        return history
+        return self.storage.load_collection(params)
 
     def save_chat_message(self, **kwargs):
         size = self.storage.count_collection("chat_history")

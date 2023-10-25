@@ -92,15 +92,18 @@ class TelemetryManager(Resource):
         return f'exchange.telemetry.{root}'
 
     def unique_roots(self):
-        return list(set(self.namespace_root(key) for key in self.namespace_map.keys()))
+        return list({self.namespace_root(key) for key in self.namespace_map.keys()})
 
     def namespace_root(self, namespace):
         return namespace.split('.')[0]
 
     def build_telemetry_message(self, namespace, data):
         root = self.namespace_root(namespace)
-        message = self.build_message(self.build_telemetry_exchange_name(root), message={'namespace': namespace, 'data': data}, message_type='telemetry')
-        return message
+        return self.build_message(
+            self.build_telemetry_exchange_name(root),
+            message={'namespace': namespace, 'data': data},
+            message_type='telemetry',
+        )
 
     async def make_exchanges(self):
         for root in self.unique_roots():

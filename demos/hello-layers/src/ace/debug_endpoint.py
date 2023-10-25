@@ -24,8 +24,7 @@ class StatusHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            handler = self.get_routes.get(self.path)
-            if handler:
+            if handler := self.get_routes.get(self.path):
                 data = handler()
                 self._handle_callback_response(data)
             else:
@@ -39,8 +38,7 @@ class StatusHandler(BaseHTTPRequestHandler):
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
             post_data = json.loads(post_data)
-            handler = self.post_routes.get(self.path)
-            if handler:
+            if handler := self.post_routes.get(self.path):
                 data = handler(post_data)
                 self._handle_callback_response(data)
             else:

@@ -34,10 +34,9 @@ class AceSystem:
         ]
 
     def get_layer(self, layer_id: str):
-        for layer in self.layers:
-            if layer.get_id() == layer_id:
-                return layer
-        return None
+        return next(
+            (layer for layer in self.layers if layer.get_id() == layer_id), None
+        )
 
     def get_layers(self):
         return self.layers

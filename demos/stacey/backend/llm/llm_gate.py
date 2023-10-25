@@ -87,8 +87,7 @@ class LLMGate:
             self.process()
 
     def communicate(self, other_gate):
-        if self.category_label == other_gate.category_label:
-            pass  # Actual communication logic here
+        pass
 
     def communicate_external(self, external_system):
         pass  # Actual communication logic here

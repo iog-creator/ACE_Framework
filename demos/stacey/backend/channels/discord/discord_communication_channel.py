@@ -16,9 +16,9 @@ class DiscordCommunicationChannel(CommunicationChannel):
         self.response = None
 
     async def send_message(self, text):
-        print("DiscordCommunicationChannel.send_message: " + text)
+        print(f"DiscordCommunicationChannel.send_message: {text}")
         segments = await split_message_by_media(self.media_generators, text)
-        print("Segments: " + str(segments))
+        print(f"Segments: {str(segments)}")
         for segment in segments:
             if segment.startswith("http"):
                 embed = Embed()

@@ -154,9 +154,7 @@ async def get_completion(messages, params):
 
 
 def determine_none(input_text):
-    match = re.search(r"\[Message\]\n(none)", input_text)
-
-    if match:
+    if match := re.search(r"\[Message\]\n(none)", input_text):
         return "none"
 
     return input_text

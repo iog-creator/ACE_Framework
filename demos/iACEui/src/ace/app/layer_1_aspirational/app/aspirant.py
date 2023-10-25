@@ -11,9 +11,7 @@ logger = logging.getLogger(__name__)
 class Layer1Aspirant(BaseLayer):
 
     def _extract_judgement(self, input_text):
-        match = re.search(r'\[Judgement\]\n(allow|deny)', input_text)
-        
-        if match:
+        if match := re.search(r'\[Judgement\]\n(allow|deny)', input_text):
             return match.group(1).strip().lower()
         else:
             return 'deny'

@@ -96,16 +96,14 @@ class Layer(Resource):
         messages = messages or []
         data_messages, control_messages = [], []
         for m in messages:
-            if m['type'] == "DATA_RESPONSE" or m['type'] == "CONTROL_RESPONSE":
+            if m['type'] in ["DATA_RESPONSE", "CONTROL_RESPONSE"]:
                 m['type'] = 'response'
-            elif m['type'] == "DATA_REQUEST" or m['type'] == "CONTROL_REQUEST":
+            elif m['type'] in ["DATA_REQUEST", "CONTROL_REQUEST"]:
                 m['type'] = 'request'
-            elif m['type'] == "DATA":
+            elif m['type'] == "DATA" or m['type'] != "CONTROL":
                 m['type'] = 'data'
-            elif m['type'] == "CONTROL":
-                m['type'] = 'control'
             else:
-                m['type'] = 'data'
+                m['type'] = 'control'
         if messages:
             data_messages = [m for m in messages if m['direction']=="northbound"]
             control_messages = [m for m in messages if m['direction']=="southbound"]
@@ -121,8 +119,7 @@ class Layer(Resource):
             message_strings = [m['namespace'] + ': ' + m['data'] for m in messages]
         else:
             message_strings = [m['message'] for m in messages]
-        result = " | ".join(message_strings)
-        return result
+        return " | ".join(message_strings)
 
     def get_template_dir(self):
         return os.path.join(os.path.dirname(__file__), "prompts/templates")
@@ -239,8 +236,7 @@ class Layer(Resource):
                     time.sleep(constants.LAYER_SLEEP_TIME)
 
     async def send_message(self, direction, layer, message, delivery_mode=2):
-        queue_name = self.build_layer_queue_name(direction, layer)
-        if queue_name:
+        if queue_name := self.build_layer_queue_name(direction, layer):
             self.log.debug(f"Send message: {self.labeled_name} ->  {queue_name}")
             exchange = self.build_exchange_name(queue_name)
             await self.publish_message(exchange, message)

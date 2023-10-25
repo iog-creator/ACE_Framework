@@ -39,8 +39,7 @@ async def split_message_by_media(media_generators: [MediaGenerator], message):
 
         for match in pattern.finditer(message):
             media_prompt = match.group(1)
-            text_segment = message[last_end:match.start()].strip()
-            if text_segment:
+            if text_segment := message[last_end : match.start()].strip():
                 segments.append(text_segment)
 
             segments.append(None)
@@ -56,8 +55,7 @@ async def split_message_by_media(media_generators: [MediaGenerator], message):
             except Exception as exc:
                 print(f'Generated an exception: {exc}')
 
-    final_text_segment = message[last_end:].strip()  # Move this line outside the loop
-    if final_text_segment:  # Check and append final_text_segment outside the loop
+    if final_text_segment := message[last_end:].strip():
         segments.append(final_text_segment)
 
     return segments

@@ -55,8 +55,8 @@ class RabbitMQLog(Base):
                 deserialized_llm_messages = json.loads(llm_messages)
         except:
             print("Error decoding JSON for llm_messages:", llm_messages)
-        
-        log_entry = cls(
+
+        return cls(
             queue=method.routing_key,
             message_content=body.decode(),
             # Message Properties
@@ -72,19 +72,18 @@ class RabbitMQLog(Base):
             user_id=properties.user_id,
             app_id=properties.app_id,
             cluster_id=properties.cluster_id,
-            
             # Extracting and assigning header fields
             source_bus=headers.get('source_bus'),
             parent_message_id=headers.get('parent_message_id'),
             destination_bus=headers.get('destination_bus'),
             layer_name=headers.get('layer_name'),
             llm_messages=deserialized_llm_messages,
-            config_id=uuid.UUID(headers.get('config_id')) if headers.get('config_id') else None,
+            config_id=uuid.UUID(headers.get('config_id'))
+            if headers.get('config_id')
+            else None,
             input=headers.get('input'),
             reasoning=headers.get('reasoning'),
         )
-        
-        return log_entry
     
     layer_config = relationship("LayerConfig", back_populates="rabbitmq_logs")
 

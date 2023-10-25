@@ -169,4 +169,4 @@ class SystemIntegrity(Resource):
     def verify_ping_pong_sequence_complete(self, step):
         if step in self.post_verification_matrix:
             self.post_verification_matrix[step] = True
-        return all(value for value in self.post_verification_matrix.values())
+        return all(self.post_verification_matrix.values())

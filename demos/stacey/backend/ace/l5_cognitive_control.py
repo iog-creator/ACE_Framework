@@ -28,6 +28,6 @@ class L5CognitiveControlLayer(AceLayer):
         pass
 
     def send_southbound_message(self, message):
-        self.log("Sending south: " + message)
+        self.log(f"Sending south: {message}")
         self.southbound_bus.publish(self.get_name(), message)
 

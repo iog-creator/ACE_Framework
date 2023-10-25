@@ -16,8 +16,7 @@ class GiphyFinder:
             response = await client.get(url)
         if response.status_code == 200:
             data = response.json()
-            gif_url = data['data']['images']['original']['url']
-            return gif_url
+            return data['data']['images']['original']['url']
         else:
             print(f'Failed to retrieve GIF: {response.status_code}')
             return None

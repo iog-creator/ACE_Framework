@@ -243,9 +243,7 @@ class BaseLayer(ABC):
         await sb_queue.consume(self.control_bus_message_handler)
 
     def _compact_llm_messages(self):
-        token_count = 0
-        for message in self.llm_messages:
-            token_count += self._count_tokens(message)
+        token_count = sum(self._count_tokens(message) for message in self.llm_messages)
         logger.info(f"Current {token_count=}")
         if token_count > self.settings.memory_max_tokens:
             logger.info("compacting initiated...")
@@ -277,8 +275,7 @@ class BaseLayer(ABC):
 
         logger.info(f"{message=}")
 
-        num_tokens = len(encoding.encode(message["content"]))
-        return num_tokens
+        return len(encoding.encode(message["content"]))
 
     def _fetch_layer_config(self):
         with get_db() as db:

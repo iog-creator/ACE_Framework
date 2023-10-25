@@ -13,7 +13,7 @@ class WebCommunicationChannel(CommunicationChannel):
         self.media_generators = media_generators
 
     async def send_message(self, text):
-        print("WebCommunicationChannel.send_message: " + text)
+        print(f"WebCommunicationChannel.send_message: {text}")
         response_with_images = await replace_media_prompt_with_media_url_formatted_as_markdown(
             self.media_generators, text
         )

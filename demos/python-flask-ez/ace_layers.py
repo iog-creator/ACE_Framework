@@ -43,8 +43,7 @@ def get_messages(bus, layer):
     url = f'http://127.0.0.1:900/message?bus={bus}&layer={layer}'
     response = requests.get(url)
     if response.status_code == 200:
-        messages = response.json()['messages']
-        return messages
+        return response.json()['messages']
     else:
         print('Failed to get messages')
 

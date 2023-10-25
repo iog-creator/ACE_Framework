@@ -9,13 +9,13 @@ class GetWebContent(Action):
         self.url = url
 
     async def execute(self):
-        print("GetWebContent: Executing GetWebContent with url: " + self.url)
+        print(f"GetWebContent: Executing GetWebContent with url: {self.url}")
         web_content = await get_compressed_web_content(self.url)
-        print("GetWebContent: Returning web content: " + web_content[:100] + "...")
+        print(f"GetWebContent: Returning web content: {web_content[:100]}...")
         return web_content
 
     def __str__(self):
-        return "get_web_content for url: " + self.url
+        return f"get_web_content for url: {self.url}"
 
 
 async def get_compressed_web_content(url) -> str:

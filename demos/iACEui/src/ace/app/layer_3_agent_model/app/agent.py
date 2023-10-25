@@ -11,9 +11,9 @@ class Layer3Agent(BaseLayer):
 
     # express limitations and capabilities.
     def _extract_status(self, input_text):
-        match = re.search(r'\[Status\]\n(complete|incomplete|error)', input_text)
-        
-        if match:
+        if match := re.search(
+            r'\[Status\]\n(complete|incomplete|error)', input_text
+        ):
             return match.group(1).strip().lower()
         else:
             return 'error'
