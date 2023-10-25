@@ -187,10 +187,11 @@ class Resource(ABC):
                 continue
 
     def build_layer_queue_name(self, direction, layer):
-        queue = None
-        if layer and direction in constants.LAYER_ORIENTATIONS:
-            queue = f"{direction}.{layer}"
-        return queue
+        return (
+            f"{direction}.{layer}"
+            if layer and direction in constants.LAYER_ORIENTATIONS
+            else None
+        )
 
     def build_system_integrity_queue_name(self, layer):
         return f"system_integrity.{layer}"
@@ -227,16 +228,18 @@ class Resource(ABC):
         # Queue names are [direction].[destination_layer], so there is no:
         # 1. southbound to the first layer
         # 2. northbound to the last layer
-        if (orientation == 'southbound' and idx == 0) or (orientation == 'northbound' and idx == len(self.settings.layers) - 1):
-            return False
-        return True
+        return (orientation != 'southbound' or idx != 0) and (
+            orientation != 'northbound' or idx != len(self.settings.layers) - 1
+        )
 
     def build_all_layer_queue_names(self):
         queue_names = []
         for orientation in constants.LAYER_ORIENTATIONS:
-            for idx, layer in enumerate(self.settings.layers):
-                if self.is_existant_layer_queue(orientation, idx):
-                    queue_names.append(self.build_layer_queue_name(orientation, layer))
+            queue_names.extend(
+                self.build_layer_queue_name(orientation, layer)
+                for idx, layer in enumerate(self.settings.layers)
+                if self.is_existant_layer_queue(orientation, idx)
+            )
         return queue_names
 
     async def try_queue_subscribe(self, queue_name, callback):
@@ -261,8 +264,7 @@ class Resource(ABC):
                 if self.publisher_channel.is_closed:
                     self.log.info("Previous channel was closed, creating new channel...")
                     self.publisher_channel = await self.connection.channel()
-                exchange = await self.publisher_channel.get_exchange(exchange_name)
-                return exchange
+                return await self.publisher_channel.get_exchange(exchange_name)
             except (aio_pika.exceptions.ChannelClosed, aio_pika.exceptions.ChannelClosed) as e:
                 self.log.warning(f"Error occurred: {str(e)}. Trying again in {constants.QUEUE_SUBSCRIBE_RETRY_SECONDS} seconds.")
                 await asyncio.sleep(constants.QUEUE_SUBSCRIBE_RETRY_SECONDS)

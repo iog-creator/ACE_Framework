@@ -45,9 +45,7 @@ class Chatbot:
         # run theory agent
         self.theory_agent(message, history)
 
-        # run reflect agent
-        result = self.reflect_agent(message, history)
-        return result
+        return self.reflect_agent(message, history)
 
     def thought_agent(self, message, history):
         self.result = self.thou.run(user_message=message,
@@ -97,12 +95,18 @@ class Chatbot:
         elif self.reflection["Choice"] == "Nothing":
             return "No Response Provided"
         else:
-            new_response = self.gen.run(user_message=message, history=history["documents"], memories=self.memories,
-                                        emotion=self.thought["Emotion"], reason=self.thought["Reason"],
-                                        thought=self.thought["Inner Thought"], what=self.theory["What"],
-                                        why=self.theory["Why"], feedback=self.reflection["Reason"],
-                                        response=self.chat_response)
-            return new_response
+            return self.gen.run(
+                user_message=message,
+                history=history["documents"],
+                memories=self.memories,
+                emotion=self.thought["Emotion"],
+                reason=self.thought["Reason"],
+                thought=self.thought["Inner Thought"],
+                what=self.theory["What"],
+                why=self.theory["Why"],
+                feedback=self.reflection["Reason"],
+                response=self.chat_response,
+            )
 
     def save_memory(self, bot_response):
         size = self.storage.count_collection("chat_history")

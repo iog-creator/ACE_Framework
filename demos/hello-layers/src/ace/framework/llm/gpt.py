@@ -19,11 +19,10 @@ class GPT:
             model=model,
             messages=conversation
         )
-        response = chat_completion.choices[0].message
-        return response
+        return chat_completion.choices[0].message
 
     def _create_image(self, prompt, size='256x256') -> str:
-        print("Generating image for prompt: " + prompt)
+        print(f"Generating image for prompt: {prompt}")
         openai.api_key = self.api_key
         result = openai.Image.create(
             prompt=prompt,
@@ -31,6 +30,6 @@ class GPT:
             size=size
         )
         image_url = result.data[0].url
-        print(".... finished generating image for prompt" + prompt + ":\n" + image_url)
+        print(f".... finished generating image for prompt{prompt}" + ":\n" + image_url)
         return image_url
 

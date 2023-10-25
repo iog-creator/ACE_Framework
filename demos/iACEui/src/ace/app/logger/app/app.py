@@ -29,7 +29,7 @@ def get_connection(max_retries=5, delay_factor=2, username=settings.amqp_usernam
 
     connection = None
     retries = 0
-    
+
     while retries < max_retries:
         try:
             connection_params = pika.ConnectionParameters(
@@ -38,8 +38,7 @@ def get_connection(max_retries=5, delay_factor=2, username=settings.amqp_usernam
                 blocked_connection_timeout=300,
                 credentials=pika.PlainCredentials(username, password),
             )
-            connection = pika.BlockingConnection(connection_params)
-            return connection
+            return pika.BlockingConnection(connection_params)
         except (pika.exceptions.AMQPConnectionError, pika.exceptions.AMQPChannelError) as e:
             logging.info(f"Connection attempt {retries + 1} failed with error: {e}")
             retries += 1

@@ -148,7 +148,7 @@ class FastApiApp:
                 raise HTTPException(status_code=404, detail="Layer not found")
             layer = self.ace.get_layer(layer_id)
             if not layer:
-                raise HTTPException(status_code=404, detail="Layer not found: " + layer_id)
+                raise HTTPException(status_code=404, detail=f"Layer not found: {layer_id}")
 
             layer_state: LayerState = layer.get_layer_state()  # assuming get_current_state() is a method
             return layer_state
@@ -157,7 +157,7 @@ class FastApiApp:
         async def publish_message(request: Request):
             print("publish_message called")
             data = await request.json()
-            print("data: " + str(data))
+            print(f"data: {str(data)}")
             sender = data.get('sender')
             message = data.get('message')
             bus_name = data.get('bus')

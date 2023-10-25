@@ -88,8 +88,7 @@ class ControlDataType(DataType):
             self.message.text = data['message']
         else:
             self.reset_values()
-        fields = []
-        fields.append(Label(text='Message:'))
+        fields = [Label(text='Message:')]
         fields.append(self.message)
         return fields
 
@@ -101,10 +100,9 @@ class ControlDataType(DataType):
         return new_message
 
     def build_ui_message(self, data):
-        message = {
+        return {
             'message': data['message'],
         }
-        return message
 
     def build_layer_message(self, layer, data):
         source = self.get_southbound_source(layer)
@@ -129,8 +127,7 @@ class DataDataType(DataType):
             self.message.text = data['message']
         else:
             self.reset_values()
-        fields = []
-        fields.append(Label(text='Message:'))
+        fields = [Label(text='Message:')]
         fields.append(self.message)
         return fields
 
@@ -142,10 +139,9 @@ class DataDataType(DataType):
         return new_message
 
     def build_ui_message(self, data):
-        message = {
+        return {
             'message': data['message'],
         }
-        return message
 
     def build_layer_message(self, layer, data):
         source = self.get_northbound_source(layer)
@@ -172,11 +168,9 @@ class RequestDataType(DataType):
             self.message.text = data['message']
         else:
             self.reset_values()
-        fields = []
-        fields.append(Label(text='Direction:'))
+        fields = [Label(text='Direction:')]
         fields.append(self.direction)
-        fields.append(Label(text='Message:'))
-        fields.append(self.message)
+        fields.extend((Label(text='Message:'), self.message))
         return fields
 
     def get_message_from_dialog(self):
@@ -188,11 +182,10 @@ class RequestDataType(DataType):
         return new_message
 
     def build_ui_message(self, data):
-        message = {
+        return {
             'direction': data['direction'],
             'message': data['message'],
         }
-        return message
 
     def build_layer_message(self, layer, data):
         direction = data['direction']
@@ -221,11 +214,9 @@ class ResponseDataType(DataType):
             self.message.text = data['message']
         else:
             self.reset_values()
-        fields = []
-        fields.append(Label(text='Direction:'))
+        fields = [Label(text='Direction:')]
         fields.append(self.direction)
-        fields.append(Label(text='Message:'))
-        fields.append(self.message)
+        fields.extend((Label(text='Message:'), self.message))
         return fields
 
     def get_message_from_dialog(self):
@@ -237,11 +228,10 @@ class ResponseDataType(DataType):
         return new_message
 
     def build_ui_message(self, data):
-        message = {
+        return {
             'direction': data['direction'],
             'message': data['message'],
         }
-        return message
 
     def build_layer_message(self, layer, data):
         direction = data['direction']
@@ -271,11 +261,9 @@ class TelemetryDataType(DataType):
             self.data.text = data['data']
         else:
             self.reset_values()
-        fields = []
-        fields.append(Label(text='Namespace:'))
+        fields = [Label(text='Namespace:')]
         fields.append(self.namespace)
-        fields.append(Label(text='Data:'))
-        fields.append(self.data)
+        fields.extend((Label(text='Data:'), self.data))
         return fields
 
     def get_message_from_dialog(self):
@@ -287,11 +275,10 @@ class TelemetryDataType(DataType):
         return new_message
 
     def build_ui_message(self, data):
-        message = {
+        return {
             'namespace': data['namespace'],
             'data': data['data'],
         }
-        return message
 
     def build_layer_message(self, layer, data):
         namespace = data['namespace']
@@ -324,7 +311,9 @@ class DebugAceTui:
 
         self.help_message = FormattedTextControl(DEFAULT_HELP_MESSAGE)
         self.help_message_height = self.help_message.text.count('\n')
-        self.help_message_width = max([len(x) for x in self.help_message.text.splitlines()])
+        self.help_message_width = max(
+            len(x) for x in self.help_message.text.splitlines()
+        )
         self.log_display = ''
         self.log_display_label = Label(text='Logs:')
         self.log_display_control = FormattedTextControl(self.update_log_display)
@@ -588,10 +577,15 @@ class DebugAceTui:
         self.log_display = f"{log_time}: {entry}\n{self.log_display}"
 
     def update_output_display(self):
-        text = []
-        text.append(f"# ACTIVE LAYER: {self.active_layer_name.upper()}")
-        text.append(yaml.dump(self.active_layer, default_flow_style=False, sort_keys=True))
-        text.append("# OTHER LAYERS:")
+        text = [f"# ACTIVE LAYER: {self.active_layer_name.upper()}"]
+        text.extend(
+            (
+                yaml.dump(
+                    self.active_layer, default_flow_style=False, sort_keys=True
+                ),
+                "# OTHER LAYERS:",
+            )
+        )
         for layer in self.layer_numbers:
             if layer != self.active_layer_number:
                 name = f"layer_{layer}"

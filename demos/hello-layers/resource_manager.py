@@ -36,15 +36,19 @@ class ResourceManager():
         with open(self.args.compose_file) as f:
             compose_config = yaml.safe_load(f)
         logger.debug(f"Extracting dependencies for services: {compose_config['services'].keys()}")
-        services = {service: config.get('depends_on', []) for service, config in compose_config['services'].items()}
-        return services
+        return {
+            service: config.get('depends_on', [])
+            for service, config in compose_config['services'].items()
+        }
 
     def get_containers(self):
         logger.debug("Initializing Docker client")
         service_names = self.services.keys()
         logger.debug(f"Extracting container objects for services: {service_names}")
-        containers = {service_name: self.get_service_container(service_name) for service_name in service_names}
-        return containers
+        return {
+            service_name: self.get_service_container(service_name)
+            for service_name in service_names
+        }
 
     def restart_with_deps(self, resource, restarted=None):
         restarted = restarted or set()

@@ -83,23 +83,24 @@ def add_ancestral_prompt(
 def get_active_ancestral_prompt(
     db: Session,
 ):
-    db_prompt = db.query(AncestralPrompt).filter_by(is_active=True).first()
-    return db_prompt
+    return db.query(AncestralPrompt).filter_by(is_active=True).first()
 
 
 def get_ancestral_prompt_by_id(
     db: Session,
     ancestral_prompt_id: uuid.UUID
 ):
-    db_prompt = db.query(AncestralPrompt).filter_by(ancestral_prompt_id=ancestral_prompt_id).first()
-    return db_prompt
+    return (
+        db.query(AncestralPrompt)
+        .filter_by(ancestral_prompt_id=ancestral_prompt_id)
+        .first()
+    )
    
 
 def get_ancestral_prompts(
     db: Session,
 ):
-    db_prompt = db.query(AncestralPrompt).all()
-    return db_prompt
+    return db.query(AncestralPrompt).all()
 
 
 def set_active_ancestral_prompt(
@@ -119,32 +120,35 @@ def set_active_ancestral_prompt(
 
 
 def get_ancestral_prompt(db: Session, ancestral_prompt_id: uuid.UUID):
-    db_prompt = db.query(AncestralPrompt).filter_by(ancestral_prompt_id=ancestral_prompt_id).first()
-    return db_prompt
+    return (
+        db.query(AncestralPrompt)
+        .filter_by(ancestral_prompt_id=ancestral_prompt_id)
+        .first()
+    )
 
 
 def get_layer_logs(db: Session, layer_name: str):
     
-    logs_and_config = (
+    if logs_and_config := (
         db.query(RabbitMQLog, LayerConfig)
         .join(LayerConfig, RabbitMQLog.config_id == LayerConfig.config_id)
         .filter(LayerConfig.layer_name == layer_name)
         .all()
-    )
-
-    if not logs_and_config:
-        raise ValueError("No logs found for layer_name: {}".format(layer_name))
-
-    return logs_and_config
+    ):
+        return logs_and_config
+    else:
+        raise ValueError(f"No logs found for layer_name: {layer_name}")
 
 
 def set_active_layer_config(
     db: Session,
     config_id: uuid.UUID,
 ):
-    db_config = db.query(LayerConfig).filter(config_id == config_id).first()
-
-    if db_config:
+    if (
+        db_config := db.query(LayerConfig)
+        .filter(config_id == config_id)
+        .first()
+    ):
         db.query(LayerConfig).filter_by(
             layer_name=db_config.layer_name
         ).update({LayerConfig.is_active: False})

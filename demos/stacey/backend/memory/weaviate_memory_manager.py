@@ -63,7 +63,7 @@ class WeaviateMemoryManager:
             .with_additional(["distance", "id"])
             .do()
         )
-        print("weaviate query result: " + str(result))
+        print(f"weaviate query result: {str(result)}")
         memories = result["data"]["Get"][data_class_name]
         if not memories:
             return None  # No matching memory found
@@ -90,13 +90,16 @@ class WeaviateMemoryManager:
             .with_additional(["distance"])
             .do()
         )
-        print("weaviate query result: " + str(result))
+        print(f"weaviate query result: {str(result)}")
 
         return result["data"]["Get"][data_class_name]
 
     def create_weaviate_class_if_doesnt_already_exist(self, class_definition):
         existing_classes = self.client.schema.get()
-        if not any(class_info['class'] == data_class_name for class_info in existing_classes['classes']):
+        if all(
+            class_info['class'] != data_class_name
+            for class_info in existing_classes['classes']
+        ):
             self.client.schema.create_class(class_definition)
             print(f"Weaviate schema {data_class_name} created successfully")
 

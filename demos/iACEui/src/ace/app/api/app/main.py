@@ -164,8 +164,7 @@ async def get_test_runs(
 ):
     with session as db:
         results = dao.get_all_test_runs(db=db, layer_name=layer_name)
-        resp = [LayerTestHistoryModel.model_validate(result) for result in results]
-        return resp
+        return [LayerTestHistoryModel.model_validate(result) for result in results]
 
 
 @app.post("/prompt/ancestral", response_model=AncestralPromptModel)
@@ -199,14 +198,13 @@ def get_active_ancestral_prompt(
     session: Session = Depends(get_db),
 ):
     with session as db:
-        results = dao.get_active_ancestral_prompt(db=db)
-        if not results:
+        if results := dao.get_active_ancestral_prompt(db=db):
+            return AncestralPromptModel.model_validate(results)
+        else:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="No active ancestral prompt",
             )
-
-        return AncestralPromptModel.model_validate(results)
 
 
 @app.get("/prompt/ancestral/all", response_model=List[AncestralPromptModel])

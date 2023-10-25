@@ -27,7 +27,7 @@ class Logging(Resource):
 
     def clear_logs(self):
         self.log.info(f"{self.labeled_name} clearing old logs...")
-        files = glob.glob(self.settings.log_dir + '/*.log')
+        files = glob.glob(f'{self.settings.log_dir}/*.log')
         for f in files:
             try:
                 os.remove(f)

@@ -59,12 +59,14 @@ class L3AgentLayer(AceLayer):
                 {"role": "user", "content": user_message}
             ]
 
-            print("System prompt: " + system_message)
-            print("User prompt: " + user_message)
+            print(f"System prompt: {system_message}")
+            print(f"User prompt: {user_message}")
             await self.action_enabled_llm.talk_to_llm_and_execute_actions(
                 self.preferred_communication_channel, llm_messages
             )
-            print("Wakeup alarm actions complete. Next wakeup time: " + self.next_wakeup_time)
+            print(
+                f"Wakeup alarm actions complete. Next wakeup time: {self.next_wakeup_time}"
+            )
         finally:
             await self.set_active(False)
 
@@ -82,7 +84,7 @@ class L3AgentLayer(AceLayer):
                 return
             last_chat_message = chat_history[-1]
             print("\n--------------------------------------------------------")
-            self.log("Got chat message: " + stringify_chat_message(last_chat_message))
+            self.log(f"Got chat message: {stringify_chat_message(last_chat_message)}")
 
             memories: [Memory] = self.memory_manager.find_relevant_memories(
                 stringify_chat_message(last_chat_message),
@@ -111,8 +113,8 @@ class L3AgentLayer(AceLayer):
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": user_message}
             ]
-            print("System prompt: " + system_message)
-            print("User prompt: " + user_message)
+            print(f"System prompt: {system_message}")
+            print(f"User prompt: {user_message}")
             await self.action_enabled_llm.talk_to_llm_and_execute_actions(communication_channel, llm_messages)
         finally:
             await self.set_active(False)
@@ -123,7 +125,7 @@ class L3AgentLayer(AceLayer):
         await self.notify_layer_state_subscribers()
 
     async def set_next_alarm(self, time_utc: str):
-        self.log("Setting next wakeup alarm to: " + time_utc)
+        self.log(f"Setting next wakeup alarm to: {time_utc}")
         self.next_wakeup_time = time_utc
         self.scheduler.add_job(
             self.on_wakeup_alarm,
@@ -141,7 +143,7 @@ class L3AgentLayer(AceLayer):
     def create_system_message(self):
         current_time_utc = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
-        system_message = f"""
+        return f"""
                 {prompts.self_identity}
                 {prompts.personality}
                 {prompts.knowledge.replace("[current_time_utc]", current_time_utc)}
@@ -150,7 +152,6 @@ class L3AgentLayer(AceLayer):
                 {prompts.alarm_clock}
                 {prompts.actions}
             """
-        return system_message
 
     async def should_act(self, communication_channel: CommunicationChannel):
         """

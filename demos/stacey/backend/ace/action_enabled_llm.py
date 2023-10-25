@@ -30,22 +30,19 @@ class ActionEnabledLLM:
     async def talk_to_llm_and_execute_actions(
             self, communication_channel: CommunicationChannel, llm_messages: [GptMessage]):
         llm_response: GptMessage = await self.llm.create_conversation_completion(self.model, llm_messages)
-        llm_response_content = llm_response["content"].strip()
-        if llm_response_content:
+        if llm_response_content := llm_response["content"].strip():
             llm_messages.append(llm_response)
 
             print("Raw LLM response:\n" + llm_response_content)
 
             actions = self.parse_actions(communication_channel, llm_response_content)
 
-            # Start all actions in parallel
-            running_actions = []
-            for action in actions:
-                running_actions.append(
-                    self.execute_action_and_send_result_to_llm(
-                        action, communication_channel, llm_messages
-                    )
+            running_actions = [
+                self.execute_action_and_send_result_to_llm(
+                    action, communication_channel, llm_messages
                 )
+                for action in actions
+            ]
             # Wait for all actions to finish
             await asyncio.gather(*running_actions)
         else:
@@ -54,7 +51,7 @@ class ActionEnabledLLM:
     async def execute_action_and_send_result_to_llm(
             self, action: Action, communication_channel: CommunicationChannel,
             llm_messages: [GptMessage]):
-        print("Executing action: " + str(action))
+        print(f"Executing action: {str(action)}")
         action_output: Optional[str] = await action.execute()
         if action_output is None:
             print("No response from action")
@@ -88,10 +85,10 @@ class ActionEnabledLLM:
         for action_data in action_data_list:
             action = self.parse_action(communication_channel, action_data)
             if action is not None:
-                print("Adding action: " + str(action))
+                print(f"Adding action: {str(action)}")
                 actions.append(action)
             else:
-                print("Unknown action: " + str(action_data))
+                print(f"Unknown action: {str(action_data)}")
                 if communication_channel:
                     actions.append(SendMessageToUser(
                         communication_channel,

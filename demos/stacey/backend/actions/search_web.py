@@ -23,4 +23,4 @@ class SearchWeb(Action):
         return json.dumps(organic_results, indent=2)
 
     def __str__(self):
-        return "search_web for query: " + self.query
+        return f"search_web for query: {self.query}"
